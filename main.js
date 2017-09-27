@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         osu!-download-beatmap-from-bloodcat
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.7.1
 // @description   download osu beatmap from bloodcat
 // @author       jacky2001114(blow)
 // @match        *://bloodcat.com/osu/?q=*&c=b&s=&m=*
@@ -49,16 +49,18 @@
     if(bool_osu){
 
         GM_setValue('OSU_enable',"true");
-        var isB = str.indexOf('osu.ppy.sh/b/');
+        var isS = str.indexOf('osu.ppy.sh/s');
+        var isB = str.indexOf('osu.ppy.sh/b');
+        var isP = str.indexOf('osu.ppy.sh/p');
         var eee=str.indexOf("?");
         var fff=str.indexOf("&");
         var isBeatmap =str.indexOf('beatmap');
 
 
         //check /s or /b
-        if(isB===-1 && eee ===-1 && fff===-1)
+        if(isS > -1 && isB===-1 && isP ===-1 )
         {
-            
+           //alert('s');
             // the song url is /s
             GM_setValue('beatmap_id',str.substring(21));
             //Get title
@@ -67,27 +69,35 @@
 
 
 
-        }else if(isB>-1){
+        }else if(isS===-1 && isB>-1 && isP ===-1){
          
-
+//alert('b');
             // the song url is /b
 
-
-            if(eee===-1){
+            if(fff>-1){
+               
                 GM_setValue('beatmap_id',str.substring(21,fff));
                 var id = GM_getValue('beatmap_id');
+               //  alert(id+'1');
                 creatButton(id);
             }else if(eee>-1){
                 GM_setValue('beatmap_id',str.substring(21,eee));
                 var id = GM_getValue('beatmap_id');
+              //  alert(id);
                 creatButton(id);
-            }else{
+            }else if(eee === -1&& fff===-1){
+                
+            GM_setValue('beatmap_id',str.substring(21));
+                var id = GM_getValue('beatmap_id');
+              //  alert(id);    
+                 creatButton(id);
+            } else{
                 alert('URL Error!Please report to the author with the URL');
             }
 
 
-        }else if(isBeatmap > -1){
-         
+        }else if(isS===-1 && isB===-1 && isP >-1){
+         console.log('beat');
             GM_setValue('beatmap_id',str.substring(31,fff));
             var id = GM_getValue('beatmap_id');
             creatButton(id);
@@ -170,3 +180,6 @@
                 document.getElementsByClassName('title')[1].click();
 
             }
+        }
+    }
+})();
